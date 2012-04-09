@@ -20,9 +20,9 @@ uint8_t ds18x20_read_temp(int16_t *t, int8_t *e)
 
 	if(ow_command(COMMAND_CONVERT_T,NULL) == RES_FAULT) return RES_FAULT;
 
-	ow_strong_pullup_line();
-	_delay_ms(1500); //
-	ow_normal_line();
+	//ow_strong_pullup_line();
+	_delay_ms(200); //
+	//ow_normal_line();
 
 	if(ow_command(COMMAND_READ_SP,NULL) == RES_FAULT) return RES_FAULT;
 

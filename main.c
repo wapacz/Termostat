@@ -2,9 +2,11 @@
 #include "ds18x20.h"
 #include "basic_types.h"
 #include "return_codes.h"
+#include "led_display.h"
+#include "relay.h"
 
 #define REQUIRED_TEMPERATURE 40
-#define AVERAGE_LENGTH 10
+#define AVERAGE_LENGTH 5
 
 int main(void) {
 	int16_t aT, temperature, temperatures[AVERAGE_LENGTH];
@@ -12,9 +14,28 @@ int main(void) {
 	uint8_t measurementCntr, errorCntr;
 	uint8_t loopCntr;
 
+	aT=0;
 	measurementCntr=0;
 	errorCntr=0;
+	for(loopCntr=0; loopCntr<AVERAGE_LENGTH; loopCntr++) {
+		temperatures[loopCntr] = 0;
+	}
 
+	ds18x20_init();
+
+	DisplayDashes();
+
+	//TurnOn();
+
+	/*
+	loopCntr =0;
+	while(TRUE) {
+		loopCntr++;
+		loopCntr%=99;
+		DisplayDigit(loopCntr);
+		_delay_ms(500);
+	}
+	*/
 	while(TRUE) {
 		if(ds18x20_read_temp(&temperature,&e) == RES_OK) {
 			/*** temperature is correct, you can do something with it ***/
@@ -23,22 +44,20 @@ int main(void) {
 			measurementCntr %= AVERAGE_LENGTH;
 
 			/*** count average temperature ***/
-			loopCntr = AVERAGE_LENGTH;
-			while(loopCntr) {
+			aT = 0;
+			for(loopCntr=0; loopCntr<AVERAGE_LENGTH; loopCntr++)
 				aT += temperatures[loopCntr];
-				loopCntr--;
-			}
 			aT = aT / AVERAGE_LENGTH;	
 
 			/*** update LED display ***/
-			
+			DisplayDigit(aT);
 
 			/*** check and turn on/off relay ***/
-			if(aT > (REQUIRED_TEMPERATURE + 1)) {
-				// turn off
+			if(aT > (REQUIRED_TEMPERATURE)) {
+				TurnOff();
 			}
-			if(aT < (REQUIRED_TEMPERATURE - 1)) {
-				// turn on
+			if(aT < (REQUIRED_TEMPERATURE)) {
+				TurnOn();
 			}
 
 
@@ -47,10 +66,10 @@ int main(void) {
 		}
 		else {
 			errorCntr++;
-			if(errorCntr == 10) {
+			//if(errorCntr == 10) {
 				// display fault
-				// - -
-			}
+				DisplayDashes();
+			//}
 		}
 	}
 }

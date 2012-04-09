@@ -9,10 +9,10 @@
 #include "crc.h"
 #include "return_codes.h"
 
-#define OW_PIN  PB0
-#define OW_IN   PINB
-#define OW_OUT  PORTB
-#define OW_DDR  DDRB
+#define OW_PIN  PD0
+#define OW_IN   PIND
+#define OW_OUT  PORTD
+#define OW_DDR  DDRD
 
 #define OW_LOW_STATE  0
 #define OW_HIGH_STATE (1 << OW_PIN) /* bit set on the OW pin */
